@@ -1,18 +1,3 @@
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(package-selected-packages
-   (quote
-    (neotree emmet-mode ivy org-bullets use-package web-mode counsel deft doom-themes ace-jump-mode))))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )
-
 ;;
 ;; add melpa packages
 ;;
@@ -72,6 +57,10 @@
 ;;
 ;; set default behaviour
 ;;
+
+;; load custom file, ignore if not existing
+(setq custom-file "~/.emacs.d/custom.el")
+(load custom-file 'noerror)
 
 ;; buffer menu
 (global-set-key (kbd "C-x C-b") 'buffer-menu)
