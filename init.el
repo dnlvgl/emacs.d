@@ -5,7 +5,7 @@
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
    (quote
-    ( web-mode counsel deft doom-themes ace-jump-mode))))
+    (use-package web-mode counsel deft doom-themes ace-jump-mode))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -35,8 +35,13 @@
 ;; Don't delete this line.
 (package-initialize)
 
+;; Bootstrap use-package
+(unless (package-installed-p 'use-package)
+  (package-refresh-contents)
+  (package-install 'use-package))
+
 ;;
-;; basic apperance
+;; basic appearance
 ;;
 
 ;; disable startup screen
@@ -56,8 +61,10 @@
                     :width 'normal)
 
 ;; color theme
-(require 'doom-themes)
-(load-theme 'doom-one t)
+(use-package doom-themes
+  :ensure t 
+  :config
+  (load-theme 'doom-one t))
 
 ;; enable line numbers
 (global-linum-mode t)
@@ -91,23 +98,30 @@
 
 (global-set-key (kbd "S-<down-mouse-1>") #'mouse-start-rectangle)
 
+;; open config on C-c e
+(global-set-key (kbd "C-c e") '(lambda ()
+			   (interactive)
+			   (find-file "~/.emacs.d/init.el")))
+
 ;;
 ;; config packages
 ;;
 
 ;; set up ido mode
-(require `ido)
-(setq ido-enable-flex-matching t)
-(setq ido-everywhere t)
-(ido-mode 1)
+(use-package ido
+  :ensure t 
+  :config
+  (progn
+    (setq ido-enable-flex-matching t)
+    (setq ido-everywhere t)
+    (ido-mode 1)))
 
 ;; set up ace-jump-mode
-(add-to-list 'load-path "which-folder-ace-jump-mode-file-in/")
-(require 'ace-jump-mode)
-(define-key global-map (kbd "C-c C-SPC" ) 'ace-jump-mode)
+(use-package ace-jump-mode
+  :ensure t 
+  :bind ("C-." . ace-jump-mode))
 
 ;; orgmode
-
 ;; set custom todo states, using gtd states
 (setq org-todo-keywords
       '((sequence "TODO" "DOING" "WAITING" "|" "DONE" "CANCELED")))
@@ -127,61 +141,67 @@
    ("CANCELED" .  "grey"))) 
 
 ;; use org-bullets-mode for utf8 symbols as org bullets
-(require 'org-bullets)
-(add-hook 'org-mode-hook (lambda () (org-bullets-mode 1)))
+;;(require 'org-bullets)
+;;(add-hook 'org-mode-hook (lambda () (org-bullets-mode 1)))
 
-;; deft
-(require 'deft)
+(use-package org-bullets
+  :ensure t 
+  :hook (org-mode . org-bullets-mode))
 
-;; set deft to F8
-(global-set-key [f8] 'deft)
-
-(setq deft-default-extension "org")
-;; only search for org files in org directory
-(setq deft-extensions '("org"))
-(setq deft-directory "~/Dokumente/org")
-
-;; use file name as title
-(setq deft-use-filename-as-title t)
+(use-package deft
+  :ensure t 
+  :bind ("<f8>" . deft)
+  :commands (deft)
+  ;; only search for org files in org directory
+  ;; use file name as title
+  :config (setq deft-directory "~/Dokumente/org"
+                deft-extensions '("org")
+		deft-default-extension "org"
+		deft-use-filename-as-title t))
 
 ;; ivy, counsel, swiper
-(require 'ivy)
+(use-package ivy
+  :ensure t)
+
 ;; counsel should load ivy as dep
-(require 'counsel)
-(ivy-mode 1)
-(global-set-key (kbd "C-x C-f") 'counsel-find-file)
-(global-set-key (kbd "C-s") 'swiper)
-(global-set-key (kbd "M-y") 'counsel-yank-pop)
-(global-set-key (kbd "M-x") 'counsel-M-x)
+(use-package counsel
+  :ensure t
+  :bind (
+	 ("C-x C-f" . counsel-find-file)
+	 ("C-s" . swiper)
+	 ("M-y" . counsel-yank-pop)
+	 ("M-x" . counsel-M-x))
+  :config (ivy-mode 1))
 
 ;; config for magit and projectile
 ;;(setq magit-completing-read-function 'ivy-completing-read)
 ;;(setq projectile-completion-system 'ivy)
 
 ;; web-mode
+(use-package web-mode
+  :ensure t
+  :config (progn
+	    (add-to-list 'auto-mode-alist '("\\.njs\\'" . web-mode))
+	    (add-to-list 'auto-mode-alist '("\\.njk\\'" . web-mode))
+	    (add-to-list 'auto-mode-alist '("\\.html\\'" . web-mode))
+	    (setq web-mode-markup-indent-offset 2)
+	    (setq web-mode-code-indent-offset 2)
+	    (setq web-mode-css-indent-offset 2)
+	    ;; highlight columns
+	    (setq web-mode-enable-current-column-highlight t)
+	    (setq web-mode-enable-current-element-highlight t)))
 
-(require 'web-mode)
-(add-to-list 'auto-mode-alist '("\\.njs\\'" . web-mode))
-(add-to-list 'auto-mode-alist '("\\.njk\\'" . web-mode))
-(add-to-list 'auto-mode-alist '("\\.html\\'" . web-mode))
-
-(setq web-mode-markup-indent-offset 2)
-(setq web-mode-code-indent-offset 2)
-(setq web-mode-css-indent-offset 2)
-
-;; highlight columns
-(setq web-mode-enable-current-column-highlight t)
-(setq web-mode-enable-current-element-highlight t)
 
 ;; emmet
-(require 'emmet-mode)
-;; use in webmode
-(add-hook 'web-mode-hook  'emmet-mode)
-;; toggle autocompletion on inline css
-(add-hook 'web-mode-before-auto-complete-hooks
+(use-package emmet-mode
+  :ensure t
+  :hook (web-mode . emmet-mode)
+  :init
+  ;; toggle autocompletion on inline css
+  (add-hook 'web-mode-before-auto-complete-hooks
     '(lambda ()
      (let ((web-mode-cur-language
   	    (web-mode-language-at-pos)))
                (if (string= web-mode-cur-language "css")
     	   (setq emmet-use-css-transform t)
-      	 (setq emmet-use-css-transform nil)))))
+      	 (setq emmet-use-css-transform nil))))))
