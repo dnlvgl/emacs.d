@@ -5,7 +5,7 @@
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
    (quote
-    (use-package web-mode counsel deft doom-themes ace-jump-mode))))
+    (neotree emmet-mode ivy org-bullets use-package web-mode counsel deft doom-themes ace-jump-mode))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -204,4 +204,15 @@
   	    (web-mode-language-at-pos)))
                (if (string= web-mode-cur-language "css")
     	   (setq emmet-use-css-transform t)
-      	 (setq emmet-use-css-transform nil))))))
+	   (setq emmet-use-css-transform nil))))))
+
+;; iconset
+;; run 'M-x all-the-icons-install-fonts' to install all fonts
+(use-package all-the-icons
+  :ensure t)
+
+;; neotree
+(use-package neotree
+  :ensure t
+  :bind ("<f1>" . neotree-toggle)
+  :config (setq neo-theme (if (display-graphic-p) 'icons 'arrow)))
