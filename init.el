@@ -205,3 +205,23 @@
   :ensure t
   :bind ("<f1>" . neotree-toggle)
   :config (setq neo-theme (if (display-graphic-p) 'icons 'arrow)))
+
+;; company mode autocomplete
+(use-package company
+  :ensure t
+  ;; use company mode everywhere
+  :hook (after-init . global-company-mode))
+
+;; company tern
+;; install tern 'npm install -g tern tern-lint'
+;; add global '.tern-config' file
+(use-package company-tern
+  :ensure t
+  :after company
+  :config (add-to-list 'company-backends 'company-tern))
+
+(use-package tern
+  :ensure t
+  :defer t
+  :diminish tern-mode
+  :hook (js-mode . tern-mode))
