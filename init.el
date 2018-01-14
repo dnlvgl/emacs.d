@@ -92,6 +92,9 @@
 			   (interactive)
 			   (find-file "~/.emacs.d/init.el")))
 
+
+;; autoclose brackets
+(electric-pair-mode 1)
 ;;
 ;; config packages
 ;;
@@ -224,4 +227,12 @@
   :ensure t
   :defer t
   :diminish tern-mode
-  :hook (js-mode . tern-mode))
+  :hook (js-mode . tern-mode)
+  :config (setq tern-command (append tern-command '("--no-port-file"))))
+
+;; show changes from git
+(use-package git-gutter-fringe+
+  :ensure t
+  :config
+  (global-git-gutter+-mode)
+  (setq git-gutter-fr+-side 'left-fringe))
