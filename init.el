@@ -95,6 +95,10 @@
 
 ;; autoclose brackets
 (electric-pair-mode 1)
+
+;; highlight brackets
+(setq show-paren-delay 0)
+(show-paren-mode 1)
 ;;
 ;; config packages
 ;;
