@@ -149,11 +149,14 @@
   :config (setq deft-directory "~/Dokumente/org"
                 deft-extensions '("org")
 		deft-default-extension "org"
-		deft-use-filename-as-title t))
+		deft-use-filename-as-title t
+		deft-current-sort-method 'title
+		deft-file-naming-rules '((noslash . "_")(nospace . "_w")(case-fn . downcase))))
 
 ;; ivy, counsel, swiper
 (use-package ivy
-  :ensure t)
+  :ensure t
+  :config (ivy-mode 1))
 
 ;; counsel should load ivy as dep
 (use-package counsel
@@ -162,8 +165,7 @@
 	 ("C-x C-f" . counsel-find-file)
 	 ("C-s" . swiper)
 	 ("M-y" . counsel-yank-pop)
-	 ("M-x" . counsel-M-x))
-  :config (ivy-mode 1))
+	 ("M-x" . counsel-M-x)))
 
 ;; config for magit and projectile
 ;;(setq magit-completing-read-function 'ivy-completing-read)
