@@ -118,9 +118,9 @@
   :bind ("C-." . ace-jump-mode))
 
 ;; orgmode
-;; set custom todo states, using gtd states
-(setq org-todo-keywords
-      '((sequence "TODO" "DOING" "WAITING" "|" "DONE" "CANCELED")))
+;; set custom todo states
+(setq org-todo-keywords 
+  '((sequence "TODO" "DOING" "BLOCKED" "REVIEW" "|" "DONE" "ARCHIVED")))
 
 ;; all child tasks must be 'done' for parent to be marked 'done'
 (setq org-enforce-todo-dependencies t)
@@ -128,18 +128,21 @@
 ;; set source for agenda
 (setq org-agenda-files '("~/Dokumente/org/"))
 
-;; Setting Colours (faces) for todo states to give clearer view of work 
-(setq org-todo-keyword-faces
-  '(("TODO" . org-warning)
-   ("DOING" . "yellow")
-   ("WAITING" . "red")
-   ("DONE" . "green")
-   ("CANCELED" .  "grey"))) 
+;; degfine capture
+(define-key global-map "\C-cc" 'org-capture)
 
+;; capture templates
+(setq org-capture-templates
+      '(("t" ; hotkey
+	 "Todo" ;name
+	 entry (file+headline "~/Dokumente/org/organize.org" "Tasks")
+	 "* TODO %?\n  %i\n  %a") ;template
+	("j"
+	 "Journal"
+	 entry (file+datetree "~/Dokumente/org/journal.org")
+	 "** %u %^{Title}\n  %?")))
+ 
 ;; use org-bullets-mode for utf8 symbols as org bullets
-;;(require 'org-bullets)
-;;(add-hook 'org-mode-hook (lambda () (org-bullets-mode 1)))
-
 (use-package org-bullets
   :ensure t 
   :hook (org-mode . org-bullets-mode))
