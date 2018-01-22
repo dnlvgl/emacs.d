@@ -169,6 +169,10 @@
   :ensure t
   :config (projectile-global-mode 1))
 
+;; magit
+(use-package magit
+  :ensure t)
+
 ;; ivy, counsel, swiper
 (use-package ivy
   :ensure t
@@ -182,12 +186,10 @@
 	 ("C-s" . swiper)
 	 ("M-y" . counsel-yank-pop)
 	 ("M-x" . counsel-M-x))
-  :config (setq projectile-completion-system 'ivy))
+  :config 
+  (setq projectile-completion-system 'ivy)
+  (setq magit-completing-read-function 'ivy-completing-read))
 ;; add https://github.com/ericdanan/counsel-projectile ?
-
-;; config for magit and projectile
-;;(setq magit-completing-read-function 'ivy-completing-read)
-
 
 ;; use smex for M-x enhancement
 (use-package smex
