@@ -32,6 +32,9 @@
 ;; disable startup screen
 (setq inhibit-startup-screen t)
 
+;; Start maximised (cross-platf)
+;;(add-hook 'window-setup-hook 'toggle-frame-maximized t)
+
 ;; disable toolbar
 (tool-bar-mode -1)
 
@@ -120,7 +123,7 @@
 ;; orgmode
 ;; set custom todo states
 (setq org-todo-keywords 
-  '((sequence "TODO" "DOING" "BLOCKED" "REVIEW" "|" "DONE" "ARCHIVED")))
+  '((sequence "TODO" "DOING" "BLOCKED" "|" "DONE")))
 
 ;; all child tasks must be 'done' for parent to be marked 'done'
 (setq org-enforce-todo-dependencies t)
