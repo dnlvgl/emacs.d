@@ -181,6 +181,10 @@
 ;;(setq magit-completing-read-function 'ivy-completing-read)
 ;;(setq projectile-completion-system 'ivy)
 
+;; use smex for M-x enhancement
+(use-package smex
+  :ensure t)
+
 ;; web-mode
 (use-package web-mode
   :ensure t
