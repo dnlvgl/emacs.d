@@ -167,7 +167,10 @@
 ;; projectile
 (use-package projectile
   :ensure t
-  :config (projectile-global-mode 1))
+  :config
+  (projectile-global-mode 1)
+  ;;change neotree root on project change
+  (setq projectile-switch-project-action 'neotree-projectile-action))
 
 ;; magit
 (use-package magit
