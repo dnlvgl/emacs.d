@@ -163,6 +163,12 @@
 		deft-current-sort-method 'title
 		deft-file-naming-rules '((noslash . "_")(nospace . "_w")(case-fn . downcase))))
 
+
+;; projectile
+(use-package projectile
+  :ensure t
+  :config (projectile-global-mode 1))
+
 ;; ivy, counsel, swiper
 (use-package ivy
   :ensure t
@@ -175,11 +181,13 @@
 	 ("C-x C-f" . counsel-find-file)
 	 ("C-s" . swiper)
 	 ("M-y" . counsel-yank-pop)
-	 ("M-x" . counsel-M-x)))
+	 ("M-x" . counsel-M-x))
+  :config (setq projectile-completion-system 'ivy))
+;; add https://github.com/ericdanan/counsel-projectile ?
 
 ;; config for magit and projectile
 ;;(setq magit-completing-read-function 'ivy-completing-read)
-;;(setq projectile-completion-system 'ivy)
+
 
 ;; use smex for M-x enhancement
 (use-package smex
@@ -252,3 +260,4 @@
   :config
   (global-git-gutter+-mode)
   (setq git-gutter-fr+-side 'left-fringe))
+
