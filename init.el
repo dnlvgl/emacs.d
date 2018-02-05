@@ -203,6 +203,26 @@
 (use-package smex
   :ensure t)
 
+;; js2-mode
+(use-package js2-mode
+  :ensure t
+  :config (progn
+	    (add-to-list 'auto-mode-alist '("\\.js\\'" . js2-mode))
+	    ;; replaced with rjsx for better highlighting
+	    ;;(add-to-list 'auto-mode-alist '("\\.jsx?\\'" . js2-jsx-mode))
+	    ))
+
+;; react mode
+(use-package rjsx-mode
+  :ensure t)
+
+(defadvice js-jsx-indent-line (after js-jsx-indent-line-after-hack activate)
+  "Workaround sgml-mode and follow airbnb component style."
+  (save-excursion
+    (beginning-of-line)
+    (if (looking-at-p "^ +\/?> *$")
+        (delete-char sgml-basic-offset))))
+
 ;; web-mode
 (use-package web-mode
   :ensure t
@@ -213,6 +233,7 @@
 	    (setq web-mode-markup-indent-offset 2)
 	    (setq web-mode-code-indent-offset 2)
 	    (setq web-mode-css-indent-offset 2)
+	    (setq web-mode-script-padding 2)
 	    ;; highlight columns
 	    (setq web-mode-enable-current-column-highlight t)
 	    (setq web-mode-enable-current-element-highlight t)))
