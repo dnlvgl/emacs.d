@@ -52,7 +52,7 @@
 (use-package doom-themes
   :ensure t 
   :config
-  (load-theme 'doom-one t))
+  (load-theme 'doom-vibrant t))
 
 ;; enable line numbers
 (global-linum-mode t)
@@ -144,6 +144,11 @@
 	 "Journal"
 	 entry (file+datetree "~/Dokumente/org/journal.org")
 	 "** %u %^{Title}\n  %?")))
+
+;; revert doom-theme changes of orgmode headings
+(defun my/org-mode-hook ()
+  (set-face-attribute 'org-level-1 nil :height 1.0 :background nil))
+(add-hook 'org-load-hook #'my/org-mode-hook)
  
 ;; use org-bullets-mode for utf8 symbols as org bullets
 (use-package org-bullets
