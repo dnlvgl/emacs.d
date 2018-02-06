@@ -136,14 +136,20 @@
 
 ;; capture templates
 (setq org-capture-templates
-      '(("t" ; hotkey
-	 "Todo" ;name
-	 entry (file+headline "~/Dokumente/org/organize.org" "Tasks")
-	 "* TODO %?\n  %i\n  %a") ;template
-	("j"
-	 "Journal"
-	 entry (file+datetree "~/Dokumente/org/journal.org")
-	 "** %u %^{Title}\n  %?")))
+      '(
+	;;("t"
+	;; "Todo" entry (file+headline "~/Dokumente/org/todo.org" "Tasks")
+	;; "* TODO %?\n %i\n")
+	("l"
+	 "Log"
+	 entry (file+datetree "~/Dokumente/org/log.org")
+	 "** %u %^{Title}\n %?")
+	("n"
+	 "Notes" entry (file+datetree  "~/Dokumente/org/taskdiary.org") 
+	 "* %^{Description} %^g%? Added: %U")
+	("t"
+	 "Task Diary" entry (file+datetree "~/Dokumente/org/taskdiary.org") 
+	 "* TODO %^{Description} %^g%? Added: %U")))
 
 ;; revert doom-theme changes of orgmode headings
 (defun my/org-mode-hook ()
