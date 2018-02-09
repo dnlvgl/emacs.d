@@ -49,10 +49,11 @@
                     :width 'normal)
 
 ;; color theme
-(use-package doom-themes
-  :ensure t 
-  :config
-  (load-theme 'doom-vibrant t))
+(use-package spacemacs-theme
+  :ensure t
+  :defer t
+  :init
+  (load-theme 'spacemacs-dark t))
 
 ;; enable line numbers
 (global-linum-mode t)
@@ -150,11 +151,6 @@
 	("t"
 	 "Task Diary" entry (file+datetree "~/Dokumente/org/taskdiary.org") 
 	 "* TODO %^{Description} %^g%? Added: %U")))
-
-;; revert doom-theme changes of orgmode headings
-(defun my/org-mode-hook ()
-  (set-face-attribute 'org-level-1 nil :height 1.0 :background nil))
-(add-hook 'org-load-hook #'my/org-mode-hook)
  
 ;; use org-bullets-mode for utf8 symbols as org bullets
 (use-package org-bullets
