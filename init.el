@@ -96,6 +96,11 @@
 			   (interactive)
 			   (find-file "~/.emacs.d/init.el")))
 
+;; replace deft with dired?
+(global-set-key (kbd "<f2>")
+  (lambda ()
+    (interactive)
+    (dired "~/Dokumente/org")))
 
 ;; autoclose brackets
 (electric-pair-mode 1)
