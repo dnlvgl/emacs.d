@@ -147,14 +147,17 @@
 	 "** %u %^{Title}\n %?")
 	("n"
 	 "Notes" entry (file+datetree  "~/Dokumente/org/taskdiary.org") 
-	 "* %^{Description} %^g%? Added: %U")
+	 "* %^{Description} %?%^g Added: %U")
 	("t"
 	 "Task Diary" entry (file+datetree "~/Dokumente/org/taskdiary.org") 
-	 "* TODO %^{Description} %^g%? Added: %U")))
+	 "* TODO %^{Description} %?%^g Added: %U")))
  
 ;; use org-bullets-mode for utf8 symbols as org bullets
 (use-package org-bullets
-  :ensure t 
+  :ensure t
+  :init
+  (setq org-bullets-bullet-list
+	'("●" "◉" "◍" "○" "✸"))
   :hook (org-mode . org-bullets-mode))
 
 (use-package deft
