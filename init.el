@@ -120,6 +120,43 @@ is nil, refile in the current file."
 
 (global-set-key (kbd "C-c C-d") #'org-refile-to-datetree)
 
+
+;; export org file headings into won org files
+(defun org-file-from-subtree (&optional name)
+  "Copy the subtree currently being edited and create a new file
+from it. Ask for directory.
+
+If called with the universal argument, prompt for new filename,
+otherwise use the subtree title."
+  (interactive "P")
+  (org-back-to-heading)
+  (let ((filename (cond
+                   (current-prefix-arg
+                    (expand-file-name
+                     (read-file-name "New file name: ")))
+                   (t
+                    (concat
+                     (expand-file-name
+                      (org-element-property :title
+                                            (org-element-at-point))
+                      (read-directory-name "Directory:"))
+                     ".org")))))
+    (org-copy-subtree)
+    (find-file-noselect filename)
+    (with-temp-file filename
+      (org-mode)
+      (yank)
+      ;;(org-remove-headlines)
+      ;; wont save file
+      (org-promote-subtree))))
+
+(defun org-remove-headlines ()
+  "Remove headlines with :no_title: tag."
+  (org-map-entries (lambda () (delete-region (point-at-bol) (point-at-eol)))
+                   "no_title"))
+
+(add-hook 'org-export-before-processing-hook #'org-remove-headlines)
+
 ;; open config on C-c e
 (global-set-key (kbd "C-c e") '(lambda ()
 			   (interactive)
