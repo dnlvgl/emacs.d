@@ -221,7 +221,7 @@ otherwise use the subtree title."
 	 "* %^{Description} %?%^g Added: %U")
 	("t"
 	 "Task Diary" entry (file+datetree "~/Dokumente/org/taskdiary.org") 
-	 "* TODO %^{Description} %?%^g Added: %U")))
+	 "* %^{Description} %^g Added: %U\n %?")))
  
 ;; use org-bullets-mode for utf8 symbols as org bullets
 (use-package org-bullets
