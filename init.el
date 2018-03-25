@@ -369,16 +369,7 @@ otherwise use the subtree title."
   (setq git-gutter-fr+-side 'left-fringe))
 
 ;; load local.el (additional config depending on machine) if it exists
-(defconst user-init-dir
-  (cond ((boundp 'user-emacs-directory)
-         user-emacs-directory)
-        ((boundp 'user-init-directory)
-         user-init-directory)
-        (t "~/.emacs.d/")))
-
-(defun load-user-file (file)
-  (interactive "f")
-  "Load a file in current user's configuration directory"
-  (load-file (expand-file-name file user-init-dir)))
-
-(load-user-file "local.el")
+(let ((local-settings "~/local.el"))
+ (when (file-exists-p local-settings)
+   (load-file local-settings))
+)
