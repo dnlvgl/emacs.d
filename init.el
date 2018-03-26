@@ -366,7 +366,11 @@ otherwise use the subtree title."
   :ensure t
   :config
   (global-git-gutter+-mode)
-  (setq git-gutter-fr+-side 'left-fringe))
+  (setq git-gutter-fr+-side 'left-fringe)
+  (set-face-foreground 'git-gutter-fr+-modified "#4f97d7")
+  (set-face-foreground 'git-gutter-fr+-added    "#293235")
+  (set-face-foreground 'git-gutter-fr+-deleted  "#f2241f"))
+
 
 ;; load local.el (additional config depending on machine) if it exists
 (let ((local-settings "~/local.el"))
