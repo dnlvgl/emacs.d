@@ -373,7 +373,7 @@ otherwise use the subtree title."
 
 
 ;; load local.el (additional config depending on machine) if it exists
-(let ((local-settings "~/local.el"))
+(let ((local-settings "~/.emacs.d/local.el"))
  (when (file-exists-p local-settings)
    (load-file local-settings))
 )
