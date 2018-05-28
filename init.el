@@ -5,7 +5,7 @@
 ;; melpa packages
 (require 'package)
 
-;; Add melpa package source when using package list
+;; Add melpa package sourhttps://www.emacswiki.org/emacs/BookMarksce when using package list
 (let* ((no-ssl (and (memq system-type '(windows-nt ms-dos))
                     (not (gnutls-available-p))))
        (url (concat (if no-ssl "http" "https") "://melpa.org/packages/")))
@@ -121,7 +121,7 @@ is nil, refile in the current file."
 (global-set-key (kbd "C-c C-d") #'org-refile-to-datetree)
 
 
-;; export org file headings into won org files
+;; export org file headings into org files
 (defun org-file-from-subtree (&optional name)
   "Copy the subtree currently being edited and create a new file
 from it. Ask for directory.
@@ -146,16 +146,10 @@ otherwise use the subtree title."
     (with-temp-file filename
       (org-mode)
       (yank)
-      ;;(org-remove-headlines)
-      ;; wont save file
-      (org-promote-subtree))))
-
-(defun org-remove-headlines ()
-  "Remove headlines with :no_title: tag."
-  (org-map-entries (lambda () (delete-region (point-at-bol) (point-at-eol)))
-                   "no_title"))
-
-(add-hook 'org-export-before-processing-hook #'org-remove-headlines)
+      (beginning-of-buffer)
+      (kill-whole-line)
+      ;;(org-promote-subtree)
+      )))
 
 ;; open config on C-c e
 (global-set-key (kbd "C-c e") '(lambda ()
@@ -244,6 +238,19 @@ otherwise use the subtree title."
 		deft-current-sort-method 'title
 		deft-file-naming-rules '((noslash . "_")(nospace . "_w")(case-fn . downcase))))
 
+;; emacs-dashboard
+(use-package dashboard
+    :ensure t
+    :diminish dashboard-mode
+    :config
+    (setq dashboard-banner-logo-title "your custom text")
+    (setq dashboard-startup-banner "~/.emacs.d/dasboard-logo.png")
+    (setq dashboard-items '((bookmarks . 5)
+			    (agenda . 5)			    
+			    (projects . 5)
+			    (recents . 0)
+			    (registers . 5)))
+    (dashboard-setup-startup-hook))
 
 ;; projectile
 (use-package projectile
