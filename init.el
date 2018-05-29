@@ -62,9 +62,18 @@
 ;; set default behaviour
 ;;
 
+;; declare defaults, overwrite if custom.el exists
+(setq orgfile-path '("~/Dokumente/org/"))
+
 ;; load custom file, ignore if not existing
 (setq custom-file "~/.emacs.d/custom.el")
 (load custom-file 'noerror)
+
+;; load local.el (additional config depending on machine) if it exists
+(let ((local-settings "~/.emacs.d/local.el"))
+ (when (file-exists-p local-settings)
+   (load-file local-settings))
+)
 
 ;; buffer menu
 (global-set-key (kbd "C-x C-b") 'buffer-menu)
@@ -194,8 +203,11 @@ otherwise use the subtree title."
 ;; all child tasks must be 'done' for parent to be marked 'done'
 (setq org-enforce-todo-dependencies t)
 
+;; don't show done items in agenda
+(setq org-agenda-skip-scheduled-if-done t)
+
 ;; set source for agenda
-(setq org-agenda-files '("~/Dokumente/org/"))
+(setq org-agenda-files orgfile-path)
 
 ;; degfine capture
 (define-key global-map "\C-cc" 'org-capture)
@@ -245,7 +257,7 @@ otherwise use the subtree title."
     :config
     (setq dashboard-banner-logo-title "your custom text")
     (setq dashboard-startup-banner "~/.emacs.d/dasboard-logo.png")
-    (setq dashboard-items '((bookmarks . 5)
+    (setq dashboard-items '((bookmarks . 10)
 			    (agenda . 5)			    
 			    (projects . 5)
 			    (recents . 0)
@@ -379,8 +391,5 @@ otherwise use the subtree title."
   (set-face-foreground 'git-gutter-fr+-deleted  "#f2241f"))
 
 
-;; load local.el (additional config depending on machine) if it exists
-(let ((local-settings "~/.emacs.d/local.el"))
- (when (file-exists-p local-settings)
-   (load-file local-settings))
-)
+
+
