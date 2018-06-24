@@ -359,11 +359,27 @@ otherwise use the subtree title."
   :bind ("<f1>" . neotree-toggle)
   :config (setq neo-theme (if (display-graphic-p) 'icons 'arrow)))
 
+;; if not a terminal import path variables from the shell
+;; atm used for go
+(use-package exec-path-from-shell
+  :ensure t
+  :if (memq window-system '(mac ns x))
+  :config
+  (setq exec-path-from-shell-arguments '("-l"))
+  (exec-path-from-shell-initialize)
+  (exec-path-from-shell-copy-env "GOPATH"))
+
 ;; company mode autocomplete
 (use-package company
   :ensure t
   ;; use company mode everywhere
   :hook (after-init . global-company-mode))
+
+;; use company-go
+(use-package company-go
+  :ensure t
+  :after company
+  :config (add-to-list 'company-backends 'company-go))
 
 ;; company tern
 ;; install tern 'npm install -g tern tern-lint'
