@@ -376,6 +376,7 @@ otherwise use the subtree title."
   :hook (after-init . global-company-mode))
 
 ;; use company-go
+;; needs 'go get github.com/nsf/gocode' and gopath
 (use-package company-go
   :ensure t
   :after company
