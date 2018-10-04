@@ -177,9 +177,15 @@ otherwise use the subtree title."
 ;; highlight brackets
 (setq show-paren-delay 0)
 (show-paren-mode 1)
+
 ;;
 ;; config packages
 ;;
+
+;; godmode
+(use-package god-mode
+  :config
+  (global-set-key (kbd "<escape>") 'god-local-mode))
 
 ;; set up ido mode
 (use-package ido
@@ -324,7 +330,9 @@ otherwise use the subtree title."
   :config (progn
 	    (add-to-list 'auto-mode-alist '("\\.njs\\'" . web-mode))
 	    (add-to-list 'auto-mode-alist '("\\.njk\\'" . web-mode))
+	    (add-to-list 'auto-mode-alist '("\\.mustache\\'" . web-mode))
 	    (add-to-list 'auto-mode-alist '("\\.html\\'" . web-mode))
+            (add-to-list 'auto-mode-alist '("\\.xml\\'" . web-mode))
 	    (setq web-mode-markup-indent-offset 2)
 	    (setq web-mode-code-indent-offset 2)
 	    (setq web-mode-css-indent-offset 2)
@@ -406,7 +414,3 @@ otherwise use the subtree title."
   (set-face-foreground 'git-gutter-fr+-modified "#4f97d7")
   (set-face-foreground 'git-gutter-fr+-added    "#293235")
   (set-face-foreground 'git-gutter-fr+-deleted  "#f2241f"))
-
-
-
-
