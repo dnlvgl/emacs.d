@@ -177,9 +177,15 @@ otherwise use the subtree title."
 ;; highlight brackets
 (setq show-paren-delay 0)
 (show-paren-mode 1)
+
 ;;
 ;; config packages
 ;;
+
+;; godmode
+(use-package god-mode
+  :config
+  (global-set-key (kbd "<escape>") 'god-local-mode))
 
 ;; set up ido mode
 (use-package ido
