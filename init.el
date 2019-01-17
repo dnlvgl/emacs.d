@@ -63,7 +63,7 @@
 ;;
 
 ;; declare defaults, overwrite if custom.el exists
-(setq orgfile-path '("~/Dokumente/org/"))
+(setq orgfile-path '("~/Documents/org/"))
 
 ;; load custom file, ignore if not existing
 (setq custom-file "~/.emacs.d/custom.el")
@@ -169,7 +169,7 @@ otherwise use the subtree title."
 (global-set-key (kbd "<f2>")
   (lambda ()
     (interactive)
-    (dired "~/Dokumente/org")))
+    (dired "~/Documents/org")))
 
 ;; autoclose brackets
 (electric-pair-mode 1)
@@ -178,12 +178,19 @@ otherwise use the subtree title."
 (setq show-paren-delay 0)
 (show-paren-mode 1)
 
+;; use spaces instead of tabs (or else ansible files fail)
+(setq-default indent-tabs-mode nil)
+
+;; use pdflatex for tex
+(setq latex-run-command "pdflatex")
+
 ;;
 ;; config packages
 ;;
 
 ;; godmode
 (use-package god-mode
+  :ensure t
   :config
   (global-set-key (kbd "<escape>") 'god-local-mode))
 
@@ -222,17 +229,17 @@ otherwise use the subtree title."
 (setq org-capture-templates
       '(
 	;;("t"
-	;; "Todo" entry (file+headline "~/Dokumente/org/todo.org" "Tasks")
+	;; "Todo" entry (file+headline "~/Documents/org/todo.org" "Tasks")
 	;; "* TODO %?\n %i\n")
 	("l"
 	 "Log"
-	 entry (file+datetree "~/Dokumente/org/log.org")
+	 entry (file+datetree "~/Documents/org/log.org")
 	 "** %u %^{Title}\n %?")
 	("n"
-	 "Notes" entry (file+datetree  "~/Dokumente/org/taskdiary.org") 
+	 "Notes" entry (file+datetree  "~/Documents/org/taskdiary.org") 
 	 "* %^{Description} %?%^g Added: %U")
 	("t"
-	 "Task Diary" entry (file+datetree "~/Dokumente/org/taskdiary.org") 
+	 "Task Diary" entry (file+datetree "~/Documents/org/taskdiary.org") 
 	 "* %^{Description} %^g Added: %U\n %?")))
  
 ;; use org-bullets-mode for utf8 symbols as org bullets
@@ -249,7 +256,7 @@ otherwise use the subtree title."
   :commands (deft)
   ;; only search for org files in org directory
   ;; use file name as title
-  :config (setq deft-directory "~/Dokumente/org"
+  :config (setq deft-directory "~/Documents/org"
                 deft-extensions '("org")
 		deft-default-extension "org"
 		deft-use-filename-as-title t
