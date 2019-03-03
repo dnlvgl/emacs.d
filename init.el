@@ -363,6 +363,47 @@ otherwise use the subtree title."
     	   (setq emmet-use-css-transform t)
 	   (setq emmet-use-css-transform nil))))))
 
+;; python mode
+;; finish configuration of pyenv https://github.com/howardabrams/dot-files/blob/master/emacs-python.org
+;; add installed stuff to anible
+(use-package python
+  :mode ("\\.py\\'" . python-mode)
+        ("\\.wsgi$" . python-mode)
+  :interpreter ("python" . python-mode)
+  :init (setq-default indent-tabs-mode nil)
+  :config (setq python-indent-offset 4))
+
+(use-package pyenv-mode
+  :ensure t
+  :config
+    (defun projectile-pyenv-mode-set ()
+      "Set pyenv version matching project name."
+      (let ((project (projectile-project-name)))
+        (if (member project (pyenv-mode-versions))
+            (pyenv-mode-set project)
+          (pyenv-mode-unset))))
+    (add-hook 'projectile-switch-project-hook 'projectile-pyenv-mode-set)
+    (add-hook 'python-mode-hook 'pyenv-mode))
+
+(use-package elpy
+  :ensure t
+  :commands elpy-enable
+  :init (with-eval-after-load 'python (elpy-enable))
+  :config
+  (electric-indent-local-mode -1)
+  (delete 'elpy-module-highlight-indentation elpy-modules)
+  (delete 'elpy-module-flymake elpy-modules)
+  (defun ha/elpy-goto-definition ()
+    (interactive)
+    (condition-case err
+        (elpy-goto-definition)
+      ('error (xref-find-definitions (symbol-name (symbol-at-point))))))
+  :bind (:map elpy-mode-map ([remap elpy-goto-definition] .
+                             ha/elpy-goto-definition)))
+
+(use-package pyenv-mode-auto
+   :ensure t)
+
 ;; iconset
 ;; run 'M-x all-the-icons-install-fonts' to install all fonts
 (use-package all-the-icons
@@ -396,6 +437,14 @@ otherwise use the subtree title."
   :ensure t
   :after company
   :config (add-to-list 'company-backends 'company-go))
+
+(use-package jedi
+  :ensure t)
+
+(use-package company-jedi
+  :ensure t
+  :after company
+  :config (add-to-list 'company-backends 'company-jedi))
 
 ;; company tern
 ;; install tern 'npm install -g tern tern-lint'
