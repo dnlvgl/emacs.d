@@ -1,4 +1,5 @@
 *
 !.gitignore
 !init.el
+!emacs.org
 !dasboard-logo.png
