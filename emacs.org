@@ -304,6 +304,13 @@ otherwise use the subtree title."
 ;; add https://github.com/ericdanan/counsel-projectile ?
 
     #+END_SRC
+** flycheck
+enable flycheck in every mode
+#+BEGIN_SRC emacs-lisp
+(use-package flycheck
+  :ensure t
+  :init (global-flycheck-mode))
+#+END_SRC
 ** smex
     #+BEGIN_SRC emacs-lisp
 ;; use smex for M-x enhancement
@@ -350,15 +357,21 @@ otherwise use the subtree title."
 	    (add-to-list 'auto-mode-alist '("\\.mustache\\'" . web-mode))
 	    (add-to-list 'auto-mode-alist '("\\.html\\'" . web-mode))
             (add-to-list 'auto-mode-alist '("\\.xml\\'" . web-mode))
+	    (add-to-list 'auto-mode-alist '("\\.tsx\\'" . web-mode))
 	    (setq web-mode-markup-indent-offset 2)
 	    (setq web-mode-code-indent-offset 2)
 	    (setq web-mode-css-indent-offset 2)
 	    (setq web-mode-script-padding 2)
 	    ;; highlight columns
 	    (setq web-mode-enable-current-column-highlight t)
-	    (setq web-mode-enable-current-element-highlight t)))
-
-
+	    (setq web-mode-enable-current-element-highlight t))
+  :init
+  (add-hook 'web-mode-hook
+          (lambda ()
+            (when (string-equal "tsx" (file-name-extension buffer-file-name))
+              (setup-tide-mode))))
+  ;; enable typescript-tslint checker
+  (flycheck-add-mode 'typescript-tslint 'web-mode))
     #+END_SRC
 ** emmet
     #+BEGIN_SRC emacs-lisp
