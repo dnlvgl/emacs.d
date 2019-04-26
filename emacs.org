@@ -224,6 +224,12 @@ otherwise use the subtree title."
 ;; set source for agenda
 (setq org-agenda-files orgfile-path)
 
+;; theme source blocks like in native mode
+(setq org-src-fontify-natively t
+    org-src-tab-acts-natively t
+    org-confirm-babel-evaluate nil
+    org-edit-src-content-indentation 0)
+
 ;; degfine capture
 (define-key global-map "\C-cc" 'org-capture)
 
