@@ -261,18 +261,21 @@ otherwise use the subtree title."
     #+END_SRC
 ** dashboard
     #+BEGIN_SRC emacs-lisp
-(use-package dashboard
-    :ensure t
-    :diminish dashboard-mode
-    :config
-    (setq dashboard-banner-logo-title "your custom text")
-    (setq dashboard-startup-banner "~/.emacs.d/dasboard-logo.png")
-    (setq dashboard-items '((bookmarks . 10)
-			    (agenda . 5)			    
-			    (projects . 5)
-			    (recents . 0)
-			    (registers . 5)))
-    (dashboard-setup-startup-hook))
+    (use-package dashboard
+      :ensure t
+      ;; only show dasboard if opening emacs without file
+      :if (< (length command-line-args) 2)
+      :diminish dashboard-moude
+      :config
+      (setq dashboard-banner-logo-title "YOUR ADD HERE")
+      (setq dashboard-startup-banner "~/.emacs.d/dasboard-logo.png")
+      (setq dashboard-items '((bookmarks . 10)
+                              (agenda . 5)                            
+                              (projects . 5)
+                              (recents . 0)
+                              (registers . 5)))
+      (setq dashboard-center-content t)
+      (dashboard-setup-startup-hook))
     #+END_SRC
 ** projectile
     #+BEGIN_SRC emacs-lisp
