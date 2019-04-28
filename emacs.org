@@ -27,6 +27,7 @@
    #+END_SRC
 
 * basic appearance
+** remove visual clutter
    #+BEGIN_SRC emacs-lisp
 ;; disable startup screen
 (setq inhibit-startup-screen t)
@@ -36,148 +37,166 @@
 
 ;; disable scrollbar
 (toggle-scroll-bar -1)
-
-;; set default font
+   #+END_SRC
+** set font
+   #+BEGIN_SRC emacs-lisp
 (set-face-attribute 'default nil
                     :family "Source Code Pro"
                     :height 110
                     :weight 'normal
                     :width 'normal)
 
-;; color theme
+   #+END_SRC
+** colortheme
+   #+BEGIN_SRC emacs-lisp
 (use-package spacemacs-theme
   :ensure t
   :defer t
   :init
   (load-theme 'spacemacs-dark t))
 
-;; enable line numbers
-(global-linum-mode t)
+   #+END_SRC
+** enable line numbers
+   #+BEGIN_SRC emacs-lisp
+   (global-linum-mode t)
    #+END_SRC
 
 * set default behaviour
+** orgfile path
+can be overwritten with custom.el
    #+BEGIN_SRC emacs-lisp
-;; declare defaults, overwrite if custom.el exists
-(setq orgfile-path '("~/Documents/org/"))
+   (setq orgfile-path '("~/Documents/org/"))
+   #+END_SRC
+** load additional config
+load file 'local.el' if it exists, not checked into git
+   #+BEGIN_SRC emacs-lisp
+   (let ((local-settings "~/.emacs.d/local.el"))
+    (when (file-exists-p local-settings)
+      (load-file local-settings))
+   )
+   #+END_SRC
+** buffer menu
+   #+BEGIN_SRC emacs-lisp
+   (global-set-key (kbd "C-x C-b") 'buffer-menu)
+   #+END_SRC
+** backup files
+all backup files get sent to /emacs.d/backups to not clutter the file system
+   #+BEGIN_SRC emacs-lisp
+   (setq backup-directory-alist '(("." . "~/.emacs.d/backups")))
+   (setq delete-old-versions -1)
+   (setq version-control t)
+   (setq vc-make-backup-files t)
+   (setq auto-save-file-name-transforms '((".*" "~/.emacs.d/auto-save-list/" t)))
+   #+END_SRC
+** enable selection with mouse
+   #+BEGIN_SRC emacs-lisp
+   (defun mouse-start-rectangle (start-event)
+     (interactive "e")
+     (deactivate-mark)
+     (mouse-set-point start-event)
+     (rectangle-mark-mode +1)
+     (let ((drag-event))
+       (track-mouse
+         (while (progn
+                  (setq drag-event (read-event))
+                  (mouse-movement-p drag-event))
+           (mouse-set-point drag-event)))))
 
-;; load custom file, ignore if not existing
-;;(setq custom-file "~/.emacs.d/custom.el")
-;;(load custom-file 'noerror)
+   (global-set-key (kbd "S-<down-mouse-1>") #'mouse-start-rectangle)
+   #+END_SRC
+** refile into datetree
+   #+BEGIN_SRC emacs-lisp
+   (defun org-refile-to-datetree (&optional file)
+     "Refile a subtree to a datetree corresponding to it's timestamp.
 
-;; load local.el (additional config depending on machine) if it exists
-(let ((local-settings "~/.emacs.d/local.el"))
- (when (file-exists-p local-settings)
-   (load-file local-settings))
-)
+   The current time is used if the entry has no timestamp. If FILE
+   is nil, refile in the current file."
+     (interactive "f")
+       (let* ((datetree-date (or (org-entry-get nil "TIMESTAMP_IA" t)
+                               (org-read-date t nil "now")))
+            (date (org-date-to-gregorian datetree-date))
+            )
+       (save-excursion
+         (with-current-buffer (current-buffer)
+           (org-cut-subtree)
+           (if file (find-file file))
+           (org-datetree-find-date-create date)
+           (org-narrow-to-subtree)
+           (show-subtree)
+           (org-end-of-subtree t)
+           (newline)
+           (goto-char (point-max))
+           (org-paste-subtree 4)
+           (widen)
+           ))
+       )
+     )
 
-;; buffer menu
-(global-set-key (kbd "C-x C-b") 'buffer-menu)
+   (global-set-key (kbd "C-c C-d") #'org-refile-to-datetree)
 
-;; set all backup files to certain folder
-(setq backup-directory-alist '(("." . "~/.emacs.d/backups")))
-(setq delete-old-versions -1)
-(setq version-control t)
-(setq vc-make-backup-files t)
-(setq auto-save-file-name-transforms '((".*" "~/.emacs.d/auto-save-list/" t)))
+   #+END_SRC
+** export org file headings into org files
+   #+BEGIN_SRC emacs-lisp
+   (defun org-file-from-subtree (&optional name)
+     "Copy the subtree currently being edited and create a new file
+   from it. Ask for directory.
 
-;; enable selection with mouse
-(defun mouse-start-rectangle (start-event)
-  (interactive "e")
-  (deactivate-mark)
-  (mouse-set-point start-event)
-  (rectangle-mark-mode +1)
-  (let ((drag-event))
-    (track-mouse
-      (while (progn
-               (setq drag-event (read-event))
-               (mouse-movement-p drag-event))
-        (mouse-set-point drag-event)))))
+   If called with the universal argument, prompt for new filename,
+   otherwise use the subtree title."
+     (interactive "P")
+     (org-back-to-heading)
+     (let ((filename (cond
+                      (current-prefix-arg
+                       (expand-file-name
+                        (read-file-name "New file name: ")))
+                      (t
+                       (concat
+                        (expand-file-name
+                         (org-element-property :title
+                                               (org-element-at-point))
+                         (read-directory-name "Directory:"))
+                        ".org")))))
+       (org-copy-subtree)
+       (find-file-noselect filename)
+       (with-temp-file filename
+         (org-mode)
+         (yank)
+         (beginning-of-buffer)
+         (kill-whole-line)
+         ;;(org-promote-subtree)
+         )))
+   #+END_SRC
+** jump to emacs config
+   #+BEGIN_SRC emacs-lisp
+   (global-set-key (kbd "C-c e") '(lambda ()
+                              (interactive)
+                              (find-file "~/.emacs.d/emacs.org")))
+   #+END_SRC
+** open orgfolder with dired
+   #+BEGIN_SRC emacs-lisp
+   (global-set-key (kbd "<f2>")
+     (lambda ()
+       (interactive)
+       (dired "~/Documents/org")))
 
-(global-set-key (kbd "S-<down-mouse-1>") #'mouse-start-rectangle)
+   #+END_SRC
+** brackets
+   #+BEGIN_SRC emacs-lisp
+   ;; autoclose brackets
+   (electric-pair-mode 1)
 
-;; refile into datetree
-(defun org-refile-to-datetree (&optional file)
-  "Refile a subtree to a datetree corresponding to it's timestamp.
-
-The current time is used if the entry has no timestamp. If FILE
-is nil, refile in the current file."
-  (interactive "f")
-    (let* ((datetree-date (or (org-entry-get nil "TIMESTAMP_IA" t)
-                            (org-read-date t nil "now")))
-         (date (org-date-to-gregorian datetree-date))
-         )
-    (save-excursion
-      (with-current-buffer (current-buffer)
-        (org-cut-subtree)
-        (if file (find-file file))
-        (org-datetree-find-date-create date)
-        (org-narrow-to-subtree)
-        (show-subtree)
-        (org-end-of-subtree t)
-        (newline)
-        (goto-char (point-max))
-        (org-paste-subtree 4)
-        (widen)
-        ))
-    )
-  )
-
-(global-set-key (kbd "C-c C-d") #'org-refile-to-datetree)
-
-
-;; export org file headings into org files
-(defun org-file-from-subtree (&optional name)
-  "Copy the subtree currently being edited and create a new file
-from it. Ask for directory.
-
-If called with the universal argument, prompt for new filename,
-otherwise use the subtree title."
-  (interactive "P")
-  (org-back-to-heading)
-  (let ((filename (cond
-                   (current-prefix-arg
-                    (expand-file-name
-                     (read-file-name "New file name: ")))
-                   (t
-                    (concat
-                     (expand-file-name
-                      (org-element-property :title
-                                            (org-element-at-point))
-                      (read-directory-name "Directory:"))
-                     ".org")))))
-    (org-copy-subtree)
-    (find-file-noselect filename)
-    (with-temp-file filename
-      (org-mode)
-      (yank)
-      (beginning-of-buffer)
-      (kill-whole-line)
-      ;;(org-promote-subtree)
-      )))
-
-;; open config on C-c e
-(global-set-key (kbd "C-c e") '(lambda ()
-			   (interactive)
-			   (find-file "~/.emacs.d/emacs.org")))
-
-;; replace deft with dired?
-(global-set-key (kbd "<f2>")
-  (lambda ()
-    (interactive)
-    (dired "~/Documents/org")))
-
-;; autoclose brackets
-(electric-pair-mode 1)
-
-;; highlight brackets
-(setq show-paren-delay 0)
-(show-paren-mode 1)
-
-;; use spaces instead of tabs (or else ansible files fail)
-(setq-default indent-tabs-mode nil)
-
-;; use pdflatex for tex
-(setq latex-run-command "pdflatex")
+   ;; highlight brackets
+   (setq show-paren-delay 0)
+   (show-paren-mode 1)
+   #+END_SRC
+** spaces over tabs
+Else e.g. anible files will fail
+   #+BEGIN_SRC emacs-lisp
+   (setq-default indent-tabs-mode nil)
+   #+END_SRC
+** use pflatex for tex
+   #+BEGIN_SRC emacs-lisp
+   (setq latex-run-command "pdflatex")
    #+END_SRC
 
 * config packages
