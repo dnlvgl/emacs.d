@@ -198,7 +198,24 @@ Else e.g. anible files will fail
    #+BEGIN_SRC emacs-lisp
    (setq latex-run-command "pdflatex")
    #+END_SRC
+** window management
+when splitting window open the last buffer in split
+#+BEGIN_SRC emacs-lisp
+(defun vsplit-last-buffer ()
+  (interactive)
+  (split-window-vertically)
+  (other-window 1 nil)
+  (switch-to-next-buffer))
 
+(defun hsplit-last-buffer ()
+  (interactive)
+  (split-window-horizontally)
+  (other-window 1 nil)
+  (switch-to-next-buffer))
+
+(bind-key "C-x 2" 'vsplit-last-buffer)
+(bind-key "C-x 3" 'hsplit-last-buffer)
+#+END_SRC
 * config packages
 ** godmode
     #+BEGIN_SRC emacs-lisp
