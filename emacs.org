@@ -551,6 +551,15 @@ after pressing e.g. ~C-x~ wait a bit to see popup with possible shortcuts
   :config
   (which-key-mode))
 #+END_SRC 
+** multiple cursors
+edit multiple lines at once
+#+BEGIN_SRC emacs-lisp
+(use-package multiple-cursors
+  :ensure t
+  :bind (("M-." . mc/mark-next-like-this)
+         ("M-," . mc/unmark-next-like-this)
+         ("C-S-<mouse-1>" . mc/add-cursor-on-click)))
+#+END_SRC
 ** final config
     #+BEGIN_SRC emacs-lisp
 ;; use dashboard buffer on start (workaround for emacsclient)
