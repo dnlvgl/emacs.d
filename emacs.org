@@ -216,6 +216,42 @@ when splitting window open the last buffer in split
 (bind-key "C-x 2" 'vsplit-last-buffer)
 (bind-key "C-x 3" 'hsplit-last-buffer)
 #+END_SRC
+** custom modeline
+straight up copied from [[https://blog.jft.rocks/emacs/minimal-mode-line.html][here]]
+#+BEGIN_SRC emacs-lisp
+;; Auto updating version control information
+(setq auto-revert-check-vc-info t)
+(setq-default mode-line-format (list
+  ;; Check the buffer status and display its status
+  ;; ⚿ for locked buffer. ⛯ for modified buffer. ⛆ is the normal one.
+  '((:eval
+     (cond
+      (buffer-read-only
+       (propertize " ⚿ " 'face '(:foreground "red" :weight 'bold)))
+      ((buffer-modified-p)
+       (propertize " ⛯ " 'face '(:foreground "orange")))
+      ((not (buffer-modified-p))
+       (propertize " ⛆ " 'face '(:foreground "gray85"))))))
+  ;; Use all-the-icons to display the icon of current major mode
+  '(:eval (propertize (all-the-icons-icon-for-mode major-mode
+          :height (/ all-the-icons-scale-factor 1.4)
+          :v-adjust -0.03)))
+  ;; Show the file name with full path
+  " %f "
+  ;; Show the current position of the cursor in buffer
+  'mode-line-position
+  ;; Show the current major mode name
+  "[" 'mode-name "] "
+  ;; Check if the buffer is in any version control system, if yes, show the branch
+  '(:eval
+    (if vc-mode
+        (let* ((noback (replace-regexp-in-string
+                           (format "^ %s" (vc-backend buffer-file-name)) " " vc-mode))
+               (face (cond ((string-match "^ -" noback) 'mode-line-vc)
+                           ((string-match "^ [:@]" noback) 'mode-line-vc-edit)
+                           ((string-match "^ [!\\?]" noback) 'mode-line-vc-modified))))
+          (format "[git:%s]" (substring noback 2)))))))
+#+END_SRC
 * config packages
 ** godmode
     #+BEGIN_SRC emacs-lisp
@@ -493,10 +529,12 @@ enable flycheck in every mode
     #+END_SRC
 ** neotree
     #+BEGIN_SRC emacs-lisp
-(use-package neotree
-  :ensure t
-  :bind ("<f1>" . neotree-toggle)
-  :config (setq neo-theme (if (display-graphic-p) 'icons 'arrow)))
+    (use-package neotree
+      :ensure t
+      :bind ("<f1>" . neotree-toggle)
+      :config 
+      (setq neo-theme (if (display-graphic-p) 'icons 'arrow))
+      (setq neo-mode-line-type 'none))
 
     #+END_SRC
 ** exec-path-from-shell
