@@ -2,6 +2,12 @@
 
 * package support
    Add melpa support
+
+   if there are issues with elpa, try this [[https://emacs.stackexchange.com/questions/233/how-to-proceed-on-package-el-signature-check-failure][{source}]]: 
+   1. set-variable 'package-check-signature' to nil
+   2. install package 'gnu-elpa-keyring-update'
+   3. reset package-check-signature to the default value 'allow-unsigned
+
    #+BEGIN_SRC emacs-lisp
 (require 'package)
 
@@ -12,7 +18,7 @@
   (add-to-list 'package-archives (cons "melpa" url) t))
 (when (< emacs-major-version 24)
   ;; For important compatibility libraries like cl-lib
-  (add-to-list 'package-archives '("gnu" . "http://elpa.gnu.org/packages/")))
+  (add-to-list 'package-archives '("gnu" . "https://elpa.gnu.org/packages/")))
 (package-initialize) ;; You might already have this line
 
 ;; Load emacs packages and activate them
@@ -65,7 +71,7 @@
 ** orgfile path
 can be overwritten with custom.el
    #+BEGIN_SRC emacs-lisp
-   (setq orgfile-path '("~/Documents/org/"))
+   (setq orgfile-path '("~/Sync/org/"))
    #+END_SRC
 ** load additional config
 load file 'local.el' if it exists, not checked into git
@@ -177,10 +183,11 @@ all backup files get sent to /emacs.d/backups to not clutter the file system
    (global-set-key (kbd "<f2>")
      (lambda ()
        (interactive)
-       (dired "~/Documents/org")))
+       (dired "~/Sync/org")))
 
    #+END_SRC
 ** brackets
+   auto close and highlight brackets
    #+BEGIN_SRC emacs-lisp
    ;; autoclose brackets
    (electric-pair-mode 1)
@@ -190,16 +197,16 @@ all backup files get sent to /emacs.d/backups to not clutter the file system
    (show-paren-mode 1)
    #+END_SRC
 ** spaces over tabs
-Else e.g. anible files will fail
+   else e.g. anible files will fail
    #+BEGIN_SRC emacs-lisp
    (setq-default indent-tabs-mode nil)
    #+END_SRC
-** use pflatex for tex
+** use pdflatex for tex
    #+BEGIN_SRC emacs-lisp
    (setq latex-run-command "pdflatex")
    #+END_SRC
 ** window management
-when splitting window open the last buffer in split
+   when splitting window open the last buffer in split
 #+BEGIN_SRC emacs-lisp
 (defun vsplit-last-buffer ()
   (interactive)
@@ -254,6 +261,7 @@ straight up copied from [[https://blog.jft.rocks/emacs/minimal-mode-line.html][h
 #+END_SRC
 * config packages
 ** godmode
+   enter emacs commands without modifier keys, toggle with escape
     #+BEGIN_SRC emacs-lisp
 (use-package god-mode
   :ensure t
@@ -385,138 +393,10 @@ straight up copied from [[https://blog.jft.rocks/emacs/minimal-mode-line.html][h
 ;; add https://github.com/ericdanan/counsel-projectile ?
 
     #+END_SRC
-** flycheck
-enable flycheck in every mode
-#+BEGIN_SRC emacs-lisp
-(use-package flycheck
-  :ensure t
-  :init (global-flycheck-mode))
-#+END_SRC
 ** smex
     #+BEGIN_SRC emacs-lisp
 ;; use smex for M-x enhancement
 (use-package smex
-  :ensure t)
-
-    #+END_SRC
-** js-2-mode
-    #+BEGIN_SRC emacs-lisp
-    (use-package js2-mode
-      :ensure t
-      :config (progn
-                (add-to-list 'auto-mode-alist '("\\.js\\'" . js2-mode)))
-      (setq js2-highlight-level 3))
-
-    #+END_SRC
-** tern
-    #+BEGIN_SRC emacs-lisp
-(use-package tern
-  :ensure t
-  :defer t
-  :diminish tern-mode
-  :hook (js-mode . tern-mode)
-  :config (setq tern-command (append tern-command '("--no-port-file"))))
-    #+END_SRC
-** react-mode
-    #+BEGIN_SRC emacs-lisp
-(use-package rjsx-mode
-  :ensure t)
-
-(defadvice js-jsx-indent-line (after js-jsx-indent-line-after-hack activate)
-  "Workaround sgml-mode and follow airbnb component style."
-  (save-excursion
-    (beginning-of-line)
-    (if (looking-at-p "^ +\/?> *$")
-        (delete-char sgml-basic-offset))))
-    #+END_SRC
-** web-mode
-    #+BEGIN_SRC emacs-lisp
-(use-package web-mode
-  :ensure t
-  :config (progn
-	    (add-to-list 'auto-mode-alist '("\\.njs\\'" . web-mode))
-	    (add-to-list 'auto-mode-alist '("\\.njk\\'" . web-mode))
-	    (add-to-list 'auto-mode-alist '("\\.mustache\\'" . web-mode))
-	    (add-to-list 'auto-mode-alist '("\\.html\\'" . web-mode))
-            (add-to-list 'auto-mode-alist '("\\.xml\\'" . web-mode))
-	    (add-to-list 'auto-mode-alist '("\\.tsx\\'" . web-mode))
-	    (setq web-mode-markup-indent-offset 2)
-	    (setq web-mode-code-indent-offset 2)
-	    (setq web-mode-css-indent-offset 2)
-	    (setq web-mode-script-padding 2)
-	    ;; highlight columns
-	    (setq web-mode-enable-current-column-highlight t)
-	    (setq web-mode-enable-current-element-highlight t))
-  :init
-  (add-hook 'web-mode-hook
-          (lambda ()
-            (when (string-equal "tsx" (file-name-extension buffer-file-name))
-              (setup-tide-mode))))
-  ;; enable typescript-tslint checker
-  (flycheck-add-mode 'typescript-tslint 'web-mode))
-    #+END_SRC
-** emmet
-    #+BEGIN_SRC emacs-lisp
-(use-package emmet-mode
-  :ensure t
-  :hook (web-mode . emmet-mode)
-  :init
-  ;; toggle autocompletion on inline css
-  (add-hook 'web-mode-before-auto-complete-hooks
-    '(lambda ()
-     (let ((web-mode-cur-language
-  	    (web-mode-language-at-pos)))
-               (if (string= web-mode-cur-language "css")
-    	   (setq emmet-use-css-transform t)
-	   (setq emmet-use-css-transform nil))))))
-
-    #+END_SRC
-** python
-    #+BEGIN_SRC emacs-lisp
-;; finish configuration of pyenv https://github.com/howardabrams/dot-files/blob/master/emacs-python.org
-;; add installed stuff to anible
-(use-package python
-  :mode ("\\.py\\'" . python-mode)
-        ("\\.wsgi$" . python-mode)
-  :interpreter ("python" . python-mode)
-  :init (setq-default indent-tabs-mode nil)
-  :config (setq python-indent-offset 4))
-
-(use-package pyenv-mode
-  :ensure t
-  :config
-    (defun projectile-pyenv-mode-set ()
-      "Set pyenv version matching project name."
-      (let ((project (projectile-project-name)))
-        (if (member project (pyenv-mode-versions))
-            (pyenv-mode-set project)
-          (pyenv-mode-unset))))
-    (add-hook 'projectile-switch-project-hook 'projectile-pyenv-mode-set)
-    (add-hook 'python-mode-hook 'pyenv-mode))
-
-(use-package elpy
-  :ensure t
-  :commands elpy-enable
-  :init (with-eval-after-load 'python (elpy-enable))
-  :config
-  (electric-indent-local-mode -1)
-  (delete 'elpy-module-highlight-indentation elpy-modules)
-  (delete 'elpy-module-flymake elpy-modules)
-  (defun ha/elpy-goto-definition ()
-    (interactive)
-    (condition-case err
-        (elpy-goto-definition)
-      ('error (xref-find-definitions (symbol-name (symbol-at-point))))))
-  :bind (:map elpy-mode-map ([remap elpy-goto-definition] .
-                             ha/elpy-goto-definition)))
-
-(use-package pyenv-mode-auto
-   :ensure t)
-
-    #+END_SRC
-** jedi
-    #+BEGIN_SRC emacs-lisp
-(use-package jedi
   :ensure t)
     #+END_SRC
 ** all-the icons
@@ -537,53 +417,6 @@ enable flycheck in every mode
       (setq neo-mode-line-type 'none))
 
     #+END_SRC
-** exec-path-from-shell
-    #+BEGIN_SRC emacs-lisp
-;; if not a terminal import path variables from the shell
-;; atm used for go
-(use-package exec-path-from-shell
-  :ensure t
-  :if (memq window-system '(mac ns x))
-  :config
-  (setq exec-path-from-shell-arguments '("-l"))
-  (exec-path-from-shell-initialize)
-  (exec-path-from-shell-copy-env "GOPATH"))
-    #+END_SRC
-** company
-    autocomplete mode, use everywhere
-    #+BEGIN_SRC emacs-lisp
-;; company mode autocomplete
-(use-package company
-  :ensure t
-  ;; use company mode everywhere
-  :hook (after-init . global-company-mode))
-    #+END_SRC
-*** company-go
-     #+BEGIN_SRC emacs-lisp
-;; use company-go
-;; needs 'go get github.com/nsf/gocode' and gopath
-(use-package company-go
-  :ensure t
-  :after company
-  :config (add-to-list 'company-backends 'company-go))
-     #+END_SRC
-*** compani-jedi
-     #+BEGIN_SRC emacs-lisp
-(use-package company-jedi
-  :ensure t
-  :after company
-  :config (add-to-list 'company-backends 'company-jedi))
-
-     #+END_SRC
-*** company-tern
-     #+BEGIN_SRC emacs-lisp
-;; install tern 'npm install -g tern tern-lint'
-;; add global '.tern-config' file
-(use-package company-tern
-  :ensure t
-  :after company
-  :config (add-to-list 'company-backends 'company-tern))
-     #+END_SRC
 ** git-gutter
     #+BEGIN_SRC emacs-lisp
 ;; show changes from git
@@ -615,8 +448,146 @@ edit multiple lines at once
          ("M-," . mc/unmark-next-like-this)
          ("C-S-<mouse-1>" . mc/add-cursor-on-click)))
 #+END_SRC
-** final config
+** editorconfig
+   auto-enforced consistence
+   #+BEGIN_SRC emacs-lisp
+    (use-package editorconfig
+      :ensure t
+      :diminish "↹"
+      :init
+      (setq auto-mode-alist
+            (cl-union auto-mode-alist
+                      '(("\\.editorconfig\\'" . editorconfig-conf-mode)
+                        ("editorconfig\\'"  . editorconfig-conf-mode))))
+      :config
+      (editorconfig-mode 1))
+   #+END_SRC
+** flycheck
+enable flycheck in every mode
+#+BEGIN_SRC emacs-lisp
+(use-package flycheck
+  :ensure t
+  :init (global-flycheck-mode))
+#+END_SRC
+** language server
+   use language server protocol to have more ide features in emacs
+
+   #+BEGIN_SRC emacs-lisp
+   (use-package lsp-mode
+     :ensure t
+     :hook ((js2-mode . lsp)
+            (vue-mode . lsp))
+     :commands lsp
+     :config (setq lsp-prefer-flymake nil)) ;; prefer using lsp-ui (flycheck) over flymake.)
+
+   ;; TODO config with flycheck
+   (use-package lsp-ui
+     :ensure t
+     :requires lsp-mode flycheck
+     :hook (lsp-mode . lsp-ui-mode) 
+     :config
+     (setq lsp-ui-doc-enable t
+           lsp-ui-doc-use-childframe t
+           lsp-ui-doc-position 'top
+           lsp-ui-doc-include-signature t
+           lsp-ui-sideline-enable nil
+           lsp-ui-flycheck-enable t
+           lsp-ui-flycheck-list-position 'right
+           lsp-ui-flycheck-live-reporting t
+           lsp-ui-peek-enable t
+           lsp-ui-peek-list-width 60
+           lsp-ui-peek-peek-height 25
+           lsp-ui-sideline-enable nil))
+   #+END_SRC
+** company
+
+    autocomplete mode, use everywhere
+
     #+BEGIN_SRC emacs-lisp
-;; use dashboard buffer on start (workaround for emacsclient)
-;;(setq initial-buffer-choice (lambda () (get-buffer "*dashboard*")))
+;; company mode autocomplete
+(use-package company
+  :ensure t
+  ;; use company mode everywhere
+  :hook (after-init . global-company-mode))
     #+END_SRC
+*** company-lsp
+    Use LSP for company autocomplete
+     #+BEGIN_SRC emacs-lisp
+          (use-package company-lsp
+            :ensure t
+            :after company       
+            :commands company-lsp)
+     #+END_SRC
+* language support
+  all language specific modes/packages are configured here
+** web-mode
+    #+BEGIN_SRC emacs-lisp
+(use-package web-mode
+  :ensure t
+  :config (progn
+	    (add-to-list 'auto-mode-alist '("\\.njs\\'" . web-mode))
+	    (add-to-list 'auto-mode-alist '("\\.njk\\'" . web-mode))
+	    (add-to-list 'auto-mode-alist '("\\.mustache\\'" . web-mode))
+	    (add-to-list 'auto-mode-alist '("\\.html\\'" . web-mode))
+            (add-to-list 'auto-mode-alist '("\\.xml\\'" . web-mode))
+	    (add-to-list 'auto-mode-alist '("\\.tsx\\'" . web-mode))
+	    (setq web-mode-markup-indent-offset 2)
+	    (setq web-mode-code-indent-offset 2)
+	    (setq web-mode-css-indent-offset 2)
+	    (setq web-mode-script-padding 2)
+	    ;; highlight columns
+	    (setq web-mode-enable-current-column-highlight t)
+	    (setq web-mode-enable-current-element-highlight t))
+  :init
+  (add-hook 'web-mode-hook
+          (lambda ()
+            (when (string-equal "tsx" (file-name-extension buffer-file-name))
+              (setup-tide-mode))))
+  ;; enable typescript-tslint checker
+  (flycheck-add-mode 'typescript-tslint 'web-mode))
+    #+END_SRC
+** emmet
+    #+BEGIN_SRC emacs-lisp
+    (use-package emmet-mode
+      :ensure t
+      :hook ((web-mode . emmet-mode)
+             (vue-mode . emmet-mode))
+      :init
+      ;; toggle autocompletion on inline css
+      (add-hook 'web-mode-before-auto-complete-hooks
+        '(lambda ()
+         (let ((web-mode-cur-language
+                (web-mode-language-at-pos)))
+                   (if (string= web-mode-cur-language "css")
+               (setq emmet-use-css-transform t)
+               (setq emmet-use-css-transform nil))))))
+
+    #+END_SRC
+** vue
+   inspo> https://www.reddit.com/r/emacs/comments/b9oxbm/lspmode_javascript/ek6qm39?utm_source=share&utm_medium=web2x
+
+[[https://www.reddit.com/r/emacs/comments/ab34v5/lspmode_unable_get_up_and_running/][lsp and js2mode]]
+
+   install vue lsp server: =npm install -g vue-language-server=
+   #+BEGIN_SRC emacs-lisp
+   (use-package vue-mode
+     :ensure t)
+   ;; remove ugly background
+   (add-hook 'mmm-mode-hook
+             (lambda ()
+               (set-face-background 'mmm-default-submode-face nil)))
+   #+END_SRC
+** javascript
+
+   install js lsp server and other niceties: =npm install -g prettier eslint javascript-typescript-langserver=
+
+   #+BEGIN_SRC emacs-lisp
+    (use-package js2-mode
+      :ensure t
+      :mode ("\\.js\\'")
+      ;;:hook ((js2-mode typescript-mode-hook) . lsp)
+      :init
+      (setq-default js2-ignored-warnings '("msg.extra.trailing.comma"
+                                           "msg.missing.semi"
+                                           "msg.no.side.effects")))
+   #+END_SRC
