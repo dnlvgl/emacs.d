@@ -514,6 +514,15 @@ enable flycheck in every mode
             :after company       
             :commands company-lsp)
      #+END_SRC
+** emojify
+
+   use emojis everywhere
+
+   #+begin_src emacs-lisp
+(use-package emojify
+  :ensure t
+  :hook (after-init . global-emojify-mode))
+   #+end_src
 * language support
   all language specific modes/packages are configured here
 ** web-mode
