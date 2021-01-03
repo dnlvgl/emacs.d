@@ -42,7 +42,7 @@
 ** set font
    #+BEGIN_SRC emacs-lisp
 (set-face-attribute 'default nil
-                    :family "Source Code Pro"
+                    :family "Pragmata Pro"
                     :height 110
                     :weight 'normal
                     :width 'normal)
