@@ -311,20 +311,12 @@ straight up copied from [[https://blog.jft.rocks/emacs/minimal-mode-line.html][h
 ;; capture templates
 (setq org-capture-templates
       '(
-	;;("t"
-	;; "Todo" entry (file+headline "~/Documents/org/todo.org" "Tasks")
+	;;("t" "Name" entry (file+headline "path/to/file.org" "Tasks")
 	;; "* TODO %?\n %i\n")
-	("l"
-	 "Log"
-	 entry (file+datetree "~/Documents/org/log.org")
-	 "** %u %^{Title}\n %?")
-	("n"
-	 "Notes" entry (file+datetree  "~/Documents/org/taskdiary.org") 
-	 "* %^{Description} %?%^g Added: %U")
-	("t"
-	 "Task Diary" entry (file+datetree "~/Documents/org/taskdiary.org") 
-	 "* %^{Description} %^g Added: %U\n %?")))
- 
+        ("r" "Recipe" entry (file "~/Sync/org/rezepte.org")
+        "* %? %^G \n:PROPERTIES:\n:Quelle:\n:Menge:\n:Dauer:\n:Kalorien:\n:END:\n** Zutaten\n** Zubereitung\n"
+        :jump-to-captured t)
+ ))
 ;; use org-bullets-mode for utf8 symbols as org bullets
 (use-package org-bullets
   :ensure t
