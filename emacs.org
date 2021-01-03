@@ -305,10 +305,11 @@ straight up copied from [[https://blog.jft.rocks/emacs/minimal-mode-line.html][h
     org-confirm-babel-evaluate nil
     org-edit-src-content-indentation 0)
 
-;; degfine capture
+;; define capture
 (define-key global-map "\C-cc" 'org-capture)
 
 ;; capture templates
+;; https://orgmode.org/manual/Template-expansion.html#Template-expansion
 (setq org-capture-templates
       '(
 	;;("t" "Name" entry (file+headline "path/to/file.org" "Tasks")
