@@ -21,11 +21,6 @@
   (add-to-list 'package-archives '("gnu" . "https://elpa.gnu.org/packages/")))
 (package-initialize) ;; You might already have this line
 
-;; Load emacs packages and activate them
-;; This must come before configurations of installed packages.
-;; Don't delete this line.
-(package-initialize)
-
 ;; Bootstrap use-package
 (unless (package-installed-p 'use-package)
   (package-refresh-contents)
@@ -59,7 +54,7 @@
   :ensure t
   :defer t
   :init
-  (load-theme 'spacemacs-dark t))
+  (load-theme 'spacemacs-light t))
 
    #+END_SRC
 ** enable line numbers
@@ -345,9 +340,10 @@ straight up copied from [[https://blog.jft.rocks/emacs/minimal-mode-line.html][h
       :ensure t
       ;; only show dasboard if opening emacs without file
       :if (< (length command-line-args) 2)
-      :diminish dashboard-moude
+      :diminish dashboard-mode
       :config
       (setq dashboard-banner-logo-title "YOUR ADD HERE")
+      (setq dashboard-set-footer nil)
       (setq dashboard-startup-banner "~/.emacs.d/dasboard-logo.png")
       (setq dashboard-items '((bookmarks . 10)
                               (agenda . 5)                            
