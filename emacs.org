@@ -1,4 +1,5 @@
 #+TITLE: emacs configuration
+#+STARTUP: overview
 
 * package support
    Add melpa support
@@ -71,6 +72,10 @@ load file 'local.el' if it exists, not checked into git
       (load-file local-settings))
    )
    #+END_SRC
+** disable ring-bell
+#+BEGIN_SRC emacs-lisp
+  (setq ring-bell-function 'ignore)
+#+END_SRC
 ** buffer menu
    #+BEGIN_SRC emacs-lisp
    (global-set-key (kbd "C-x C-b") 'buffer-menu)
@@ -242,10 +247,9 @@ switch windows via C-x o (and M-o) and pick via assigned letter
 ** godmode
    enter emacs commands without modifier keys, toggle with escape
     #+BEGIN_SRC emacs-lisp
-(use-package god-mode
-  :ensure t
-  :config
-  (global-set-key (kbd "<escape>") 'god-local-mode))
+    (use-package god-mode
+      :ensure t
+      :bind ("<escape>" . god-local-mode))
     #+END_SRC
 ** ido mode
     #+BEGIN_SRC emacs-lisp
@@ -366,6 +370,15 @@ switch windows via C-x o (and M-o) and pick via assigned letter
     ;; add https://github.com/ericdanan/counsel-projectile ?
 
     #+END_SRC
+** counsel-projectile
+    #+BEGIN_SRC emacs-lisp
+      (use-package counsel-projectile
+        :ensure t
+        :config
+        (counsel-projectile-mode)
+        :bind("C-c p" . projectile-command-map))
+#+END_SRC
+
 ** smex
     #+BEGIN_SRC emacs-lisp
 ;; use smex for M-x enhancement
@@ -480,6 +493,13 @@ enable flycheck in every mode
 ;; company mode autocomplete
 (use-package company
   :ensure t
+  :custom
+  (company-begin-commands '(self-insert-command))
+  (company-idle-delay .1)
+  (company-minimum-prefix-length 2)
+  (company-show-numbers t)
+  (company-tooltip-align-annotations 't)
+  (global-company-mode t)
   ;; use company mode everywhere
   :hook (after-init . global-company-mode))
     #+END_SRC
@@ -531,8 +551,7 @@ doom emacs modeline
     #+BEGIN_SRC emacs-lisp
     (use-package emmet-mode
       :ensure t
-      :hook ((web-mode . emmet-mode)
-             (vue-mode . emmet-mode))
+      :hook ((web-mode . emmet-mode))
       :init
       ;; toggle autocompletion on inline css
       (add-hook 'web-mode-before-auto-complete-hooks
@@ -544,20 +563,6 @@ doom emacs modeline
                (setq emmet-use-css-transform nil))))))
 
     #+END_SRC
-** vue
-   inspo> https://www.reddit.com/r/emacs/comments/b9oxbm/lspmode_javascript/ek6qm39?utm_source=share&utm_medium=web2x
-
-[[https://www.reddit.com/r/emacs/comments/ab34v5/lspmode_unable_get_up_and_running/][lsp and js2mode]]
-
-   install vue lsp server: =npm install -g vue-language-server=
-   #+BEGIN_SRC emacs-lisp
-   (use-package vue-mode
-     :ensure t)
-   ;; remove ugly background
-   (add-hook 'mmm-mode-hook
-             (lambda ()
-               (set-face-background 'mmm-default-submode-face nil)))
-   #+END_SRC
 ** javascript
 
    install js lsp server and other niceties: =npm install -g prettier eslint javascript-typescript-langserver=
@@ -566,9 +571,80 @@ doom emacs modeline
     (use-package js2-mode
       :ensure t
       :mode ("\\.js\\'")
-      ;;:hook ((js2-mode typescript-mode-hook) . lsp)
+      :hook ((js2-mode typescript-mode-hook) . lsp)
       :init
       (setq-default js2-ignored-warnings '("msg.extra.trailing.comma"
                                            "msg.missing.semi"
                                            "msg.no.side.effects")))
    #+END_SRC
+** vue via polymode
+
+   install vue lsp server: =npm install -g vls=
+
+   use polymode to use multiple mode inside a vue file
+
+   copied from [[https://gist.github.com/SjB/07cdce0f1fba171704d93c2989077f4d][here]]
+
+   #+BEGIN_SRC emacs-lisp
+
+(use-package polymode
+        :ensure t
+        :defer t
+        :hook (vue-mode . lsp-deferred)
+        :mode ("\\.vue\\'" . vue-mode)
+        :config
+        (define-innermode poly-vue-template-innermode
+          :mode 'web-mode
+          :head-matcher "^<[[:space:]]*\\(?:template\\)[[:space:]]*>"
+          :tail-matcher "^</[[:space:]]*\\(?:template\\)[[:space:]]*>"
+          :head-mode 'host
+          :tail-mode 'host)
+
+        (define-innermode poly-vue-script-innermode
+          :mode 'js-mode
+          :head-matcher "<[[:space:]]*\\(?:script\\)[[:space:]]*>"
+          :tail-matcher "</[[:space:]]*\\(?:script\\)[[:space:]]*>"
+          :head-mode 'host
+          :tail-mode 'host)
+
+        (define-auto-innermode poly-vue-template-tag-lang-innermode
+          :head-matcher "^<[[:space:]]*\\(?:template\\)[[:space:]]*lang=[[:space:]]*[\"'][[:space:]]*[[:alpha:]]+[[:space:]]*[\"'][[:space:]]*>"
+          :tail-matcher "^</[[:space:]]*\\(?:template\\)[[:space:]]*>"
+          :mode-matcher (cons  "^<[[:space:]]*\\(?:template\\)[[:space:]]*lang=[[:space:]]*[\"'][[:space:]]*\\([[:alpha:]]+\\)[[:space:]]*[\"'][[:space:]]*>" 1)
+          :head-mode 'host
+          :tail-mode 'host)
+
+        (define-auto-innermode poly-vue-script-tag-lang-innermode
+          :head-matcher "<[[:space:]]*\\(?:script\\)[[:space:]]*lang=[[:space:]]*[\"'][[:space:]]*[[:alpha:]]+[[:space:]]*[\"'][[:space:]]*>"
+          :tail-matcher "</[[:space:]]*\\(?:script\\)[[:space:]]*>"
+          :mode-matcher (cons  "<[[:space:]]*\\(?:script\\)[[:space:]]*lang=[[:space:]]*[\"'][[:space:]]*\\([[:alpha:]]+\\)[[:space:]]*[\"'][[:space:]]*>" 1)
+          :head-mode 'host
+          :tail-mode 'host)
+
+        (define-auto-innermode poly-vue-style-tag-lang-innermode
+          :head-matcher "<[[:space:]]*\\(?:style\\)\\(?:scoped\\|[[:space:]]\\)*lang=[[:space:]]*[\"'][[:space:]]*[[:alpha:]]+[[:space:]]*[\"']*\\(?:scoped\\|[[:space:]]\\)*>"
+          :tail-matcher "</[[:space:]]*\\(?:style\\)[[:space:]]*>"
+          :mode-matcher (cons  "<[[:space:]]*\\(?:style\\)\\(?:scoped\\|[[:space:]]\\)*lang=[[:space:]]*[\"'][[:space:]]*\\([[:alpha:]]+\\)[[:space:]]*[\"']\\(?:scoped\\|[[:space:]]\\)*>" 1)
+          :head-mode 'host
+          :tail-mode 'host)
+
+        (define-innermode poly-vue-style-innermode
+          :mode 'css-mode
+          :head-matcher "<[[:space:]]*\\(?:style\\)[[:space:]]*\\(?:scoped\\|[[:space:]]\\)*>"
+          :tail-matcher "</[[:space:]]*\\(?:style\\)[[:space:]]*>"
+          :head-mode 'host
+          :tail-mode 'host)
+
+        (define-polymode vue-mode
+          :hostmode 'poly-sgml-hostmode
+          :innermodes '(
+                        poly-vue-template-tag-lang-innermode
+                        poly-vue-script-tag-lang-innermode
+                        poly-vue-style-tag-lang-innermode
+                        poly-vue-template-innermode
+                        poly-vue-script-innermode
+                        poly-vue-style-innermode
+                        )))
+   #+END_SRC
+
+
