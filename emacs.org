@@ -455,35 +455,26 @@ enable flycheck in every mode
   :ensure t
   :init (global-flycheck-mode))
 #+END_SRC
-** language server
+** LSP
    use language server protocol to have more ide features in emacs
 
    #+BEGIN_SRC emacs-lisp
-   (use-package lsp-mode
-     :ensure t
-     :hook ((js2-mode . lsp)
-            (vue-mode . lsp))
-     :commands lsp
-     :config (setq lsp-prefer-flymake nil)) ;; prefer using lsp-ui (flycheck) over flymake.)
+       (use-package lsp-mode
+         :ensure t
+         ;; currently set hooks in matching mode
+         ;;:hook ((js2-mode . lsp)
+         ;;       (vue-mode . lsp))
+         :commands lsp lsp-deferred
+         :init (setq lsp-keymap-prefix "C-c l")
+         :config
+         (setq lsp-prefer-flymake nil)) ;; prefer using lsp-ui (flycheck) over flymake.)
 
-   ;; TODO config with flycheck
-   (use-package lsp-ui
-     :ensure t
-     :requires lsp-mode flycheck
-     :hook (lsp-mode . lsp-ui-mode) 
-     :config
-     (setq lsp-ui-doc-enable t
-           lsp-ui-doc-use-childframe t
-           lsp-ui-doc-position 'top
-           lsp-ui-doc-include-signature t
-           lsp-ui-sideline-enable nil
-           lsp-ui-flycheck-enable t
-           lsp-ui-flycheck-list-position 'right
-           lsp-ui-flycheck-live-reporting t
-           lsp-ui-peek-enable t
-           lsp-ui-peek-list-width 60
-           lsp-ui-peek-peek-height 25
-           lsp-ui-sideline-enable nil))
+       (use-package lsp-ui
+         :ensure t
+         :requires lsp-mode flycheck
+         :hook (lsp-mode . lsp-ui-mode)
+         :commands lsp-ui-mode
+         :custom (lsp-ui-sideline-show-code-actions nil))
    #+END_SRC
 ** company
 
@@ -565,17 +556,22 @@ doom emacs modeline
     #+END_SRC
 ** javascript
 
-   install js lsp server and other niceties: =npm install -g prettier eslint javascript-typescript-langserver=
+   install js lsp server and other niceties: =npm install -g prettier eslint typescript typescript-language-server=
 
    #+BEGIN_SRC emacs-lisp
-    (use-package js2-mode
-      :ensure t
-      :mode ("\\.js\\'")
-      :hook ((js2-mode typescript-mode-hook) . lsp)
-      :init
-      (setq-default js2-ignored-warnings '("msg.extra.trailing.comma"
-                                           "msg.missing.semi"
-                                           "msg.no.side.effects")))
+   (use-package js2-mode
+     :ensure t
+     :mode ("\\.js\\'")
+     :hook (js2-mode . lsp-deferred)
+     :init
+     (setq-default js2-ignored-warnings '("msg.extra.trailing.comma"
+                                          "msg.missing.semi"
+                                          "msg.no.side.effects"))
+     :config
+     ;; have 2 space indentation by default
+     (setq js-indent-level 2
+           js2-basic-offset 2
+           js-chain-indent t))
    #+END_SRC
 ** vue via polymode
 
@@ -594,7 +590,7 @@ doom emacs modeline
         :mode ("\\.vue\\'" . vue-mode)
         :config
         (define-innermode poly-vue-template-innermode
-          :mode 'web-mode
+          :mode 'html-mode
           :head-matcher "^<[[:space:]]*\\(?:template\\)[[:space:]]*>"
           :tail-matcher "^</[[:space:]]*\\(?:template\\)[[:space:]]*>"
           :head-mode 'host
