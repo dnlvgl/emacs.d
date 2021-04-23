@@ -51,13 +51,12 @@
    #+END_SRC
 ** colortheme
    #+BEGIN_SRC emacs-lisp
-(use-package spacemacs-theme
-  :ensure t
-  :defer t
-  :init
-  (load-theme 'spacemacs-light t))
-
-   #+END_SRC
+   (use-package spacemacs-theme
+     :ensure t
+     :defer t
+     :init
+     (load-theme 'spacemacs-light t))
+      #+END_SRC
 ** enable line numbers
    #+BEGIN_SRC emacs-lisp
    (global-linum-mode t)
@@ -271,48 +270,51 @@ switch windows via C-x o (and M-o) and pick via assigned letter
     #+END_SRC
 ** orgmode
     #+BEGIN_SRC emacs-lisp
-;; set custom todo states
-(setq org-todo-keywords 
-  '((sequence "TODO" "DOING" "BLOCKED" "|" "DONE")))
+    ;; set custom todo states
+    (setq org-todo-keywords 
+          '((sequence "TODO" "DOING" "BLOCKED" "|" "DONE")))
 
-;; show line wraps
-(setq org-startup-truncated nil)
+    ;; don't show ... after headlines
+    (setq org-ellipsis " ▾")
 
-;; all child tasks must be 'done' for parent to be marked 'done'
-(setq org-enforce-todo-dependencies t)
+    ;; show line wraps
+    (setq org-startup-truncated nil)
 
-;; don't show done items in agenda
-(setq org-agenda-skip-scheduled-if-done t)
+    ;; all child tasks must be 'done' for parent to be marked 'done'
+    (setq org-enforce-todo-dependencies t)
 
-;; set source for agenda
-(setq org-agenda-files orgfile-path)
+    ;; don't show done items in agenda
+    (setq org-agenda-skip-scheduled-if-done t)
 
-;; theme source blocks like in native mode
-(setq org-src-fontify-natively t
-    org-src-tab-acts-natively t
-    org-confirm-babel-evaluate nil
-    org-edit-src-content-indentation 0)
+    ;; set source for agenda
+    (setq org-agenda-files orgfile-path)
 
-;; define capture
-(define-key global-map "\C-cc" 'org-capture)
+    ;; theme source blocks like in native mode
+    (setq org-src-fontify-natively t
+          org-src-tab-acts-natively t
+          org-confirm-babel-evaluate nil
+          org-edit-src-content-indentation 0)
 
-;; capture templates
-;; https://orgmode.org/manual/Template-expansion.html#Template-expansion
-(setq org-capture-templates
-      '(
-	;;("t" "Name" entry (file+headline "path/to/file.org" "Tasks")
-	;; "* TODO %?\n %i\n")
-        ("r" "Recipe" entry (file "~/Sync/org/rezepte.org")
-        "* %? %^G \n:PROPERTIES:\n:Quelle:\n:Menge:\n:Dauer:\n:Kalorien:\n:END:\n** Zutaten\n** Zubereitung\n"
-        :jump-to-captured t)
- ))
-;; use org-bullets-mode for utf8 symbols as org bullets
-(use-package org-bullets
-  :ensure t
-  :init
-  (setq org-bullets-bullet-list
-	'("●" "◉" "◍" "○" "✸"))
-  :hook (org-mode . org-bullets-mode))
+    ;; define capture
+    (define-key global-map "\C-cc" 'org-capture)
+
+    ;; capture templates
+    ;; https://orgmode.org/manual/Template-expansion.html#Template-expansion
+    (setq org-capture-templates
+          '(
+            ;;("t" "Name" entry (file+headline "path/to/file.org" "Tasks")
+            ;; "* TODO %?\n %i\n")
+            ("r" "Recipe" entry (file "~/Sync/org/rezepte.org")
+             "* %? %^G \n:PROPERTIES:\n:Quelle:\n:Menge:\n:Dauer:\n:Kalorien:\n:END:\n** Zutaten\n** Zubereitung\n"
+             :jump-to-captured t)
+            ))
+    ;; use org-bullets-mode for utf8 symbols as org bullets
+    (use-package org-bullets
+      :ensure t
+      :init
+      (setq org-bullets-bullet-list
+            '("●" "◉" "◍" "○" "✸"))
+      :hook (org-mode . org-bullets-mode))
 
     #+END_SRC
 ** dashboard

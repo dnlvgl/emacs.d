@@ -20,7 +20,11 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(lsp-ui-sideline-show-code-actions nil))
+ '(custom-safe-themes
+   '("de1f10725856538a8c373b3a314d41b450b8eba21d653c4a4498d52bb801ecd2" default))
+ '(lsp-ui-sideline-show-code-actions nil)
+ '(package-selected-packages
+   '(brutal-theme which-key web-mode use-package switch-window spacemacs-theme smex polymode org-bullets neotree multiple-cursors magit lsp-ui js2-mode god-mode git-gutter-fringe+ flycheck emojify emmet-mode editorconfig doom-modeline dashboard counsel-projectile company ace-jump-mode)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
