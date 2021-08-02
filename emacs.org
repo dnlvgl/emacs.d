@@ -282,7 +282,11 @@ switch windows via C-x o (and M-o) and pick via assigned letter
     (setq org-todo-keywords 
           '((sequence "TODO(t)" "NEXT(n)" "BLOCKED(b)" "SOMEDAY(s)" "PROJ(p)"  "|" "DONE(d)" "CANCELLED(c)")))
 
+    ;; shortcut for agenda
     (global-set-key (kbd "C-c a") 'org-agenda)
+
+    ;; log quicknotes into LOGBOOK drawer
+    (setq org-log-into-drawer t)
 
     ;; don't show ... after headlines
     (setq org-ellipsis " ▾")
@@ -374,6 +378,7 @@ switch windows via C-x o (and M-o) and pick via assigned letter
       :bind (
              ("C-x C-f" . counsel-find-file)
              ("C-s" . swiper)
+             ("C-x b" . counsel-ibuffer)
              ("M-y" . counsel-yank-pop)
              ("M-x" . counsel-M-x))
       :config 
@@ -415,17 +420,15 @@ switch windows via C-x o (and M-o) and pick via assigned letter
       (setq neo-mode-line-type 'none))
 
     #+END_SRC
-** git-gutter
+** diff-hl
     #+BEGIN_SRC emacs-lisp
 ;; show changes from git
-(use-package git-gutter-fringe+
+(use-package diff-hl
   :ensure t
   :config
-  (global-git-gutter+-mode)
-  (setq git-gutter-fr+-side 'left-fringe)
-  (set-face-foreground 'git-gutter-fr+-modified "#4f97d7")
-  (set-face-foreground 'git-gutter-fr+-added    "#293235")
-  (set-face-foreground 'git-gutter-fr+-deleted  "#f2241f"))
+  (global-diff-hl-mode)
+  (add-hook 'magit-pre-refresh-hook 'diff-hl-magit-pre-refresh)
+  (add-hook 'magit-post-refresh-hook 'diff-hl-magit-post-refresh))
 
     #+END_SRC
 ** which key
